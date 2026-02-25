@@ -1,0 +1,24 @@
+# Docker
+docker-compose.override.yml
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志
+*.log
+logs/
+
+# 节点模块（如果使用）
+node_modules/
+
+# 构建产物（如果有构建流程）
+dist/
+build/

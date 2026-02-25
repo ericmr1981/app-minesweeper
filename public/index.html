@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💣 扫雷游戏 - Minesweeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💣 扫雷游戏</h1>
+        
+        <div class="game-info">
+            <div class="info-box">
+                <span class="label">💣 剩余地雷</span>
+                <span id="mines-count" class="value">10</span>
+            </div>
+            <div class="info-box">
+                <span class="label">⏱️ 时间</span>
+                <span id="timer" class="value">000</span>
+            </div>
+            <div class="info-box">
+                <span class="label">😊 状态</span>
+                <span id="status" class="value">😃</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <select id="difficulty">
+                <option value="easy">简单 (9×9, 10 雷)</option>
+                <option value="medium" selected>中等 (16×16, 40 雷)</option>
+                <option value="hard">困难 (16×30, 99 雷)</option>
+            </select>
+            <button id="new-game" class="btn">🎮 新游戏</button>
+        </div>
+
+        <div id="game-board" class="game-board"></div>
+
+        <div id="game-over" class="game-over hidden">
+            <h2 id="game-over-title"></h2>
+            <p id="game-over-message"></p>
+            <button id="restart" class="btn btn-primary">再玩一次</button>
+        </div>
+
+        <div class="instructions">
+            <h3>📖 游戏说明</h3>
+            <ul>
+                <li><strong>左键点击</strong> - 揭开方块</li>
+                <li><strong>右键点击</strong> - 标记/取消标记地雷</li>
+                <li><strong>数字</strong> - 周围 8 格的地雷数量</li>
+                <li><strong>目标</strong> - 找出所有非地雷方块</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
