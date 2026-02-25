@@ -3,11 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'src/**'
-      - 'Dockerfile'
-      - 'docker-compose.yml'
-      - '.github/workflows/deploy.yml'
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build-and-deploy:
@@ -29,6 +25,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:buildcache
+          cache-to: type=inline
 
       - name: 🚀 Deploy to VPS via SSH
         uses: appleboy/ssh-action@master
@@ -38,23 +36,37 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            echo "🚀 开始部署 ${{ github.event.repository.name }}..."
+            
             # 创建应用目录（如果不存在）
-            mkdir -p ~/apps/${{ github.event.repository.name }}
+            mkdir -p ~/apps/${{ github.event.repository.name }}/html
             cd ~/apps/${{ github.event.repository.name }}
             
-            # 拉取最新镜像
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
-            
             # 停止并删除旧容器
+            echo "⏹️ 停止旧容器..."
             docker stop ${{ github.event.repository.name }} 2>/dev/null || true
             docker rm ${{ github.event.repository.name }} 2>/dev/null || true
             
+            # 拉取最新镜像
+            echo "📥 拉取最新镜像..."
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+            
             # 启动新容器
+            echo "🎯 启动新容器..."
             docker run -d \
               --name ${{ github.event.repository.name }} \
               --restart unless-stopped \
-              -p 8080:80 \
+              -p 8081:80 \
               ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
             
+            # 验证部署
+            echo "✅ 验证部署..."
+            sleep 3
+            docker ps --filter "name=${{ github.event.repository.name }}"
+            
             # 清理旧镜像
+            echo "🧹 清理旧镜像..."
             docker image prune -f
+            
+            echo "🎉 部署完成！"
+            echo "访问地址：http://${{ secrets.VPS_HOST }}:8081"
